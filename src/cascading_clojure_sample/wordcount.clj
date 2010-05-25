@@ -1,12 +1,9 @@
 (ns cascading-clojure-sample.wordcount
   (:import
     cascading.tuple.Fields)
-  (:use
-    cascading.clojure.io
-    cascading.clojure.parse
-    [cascading.clojure.io :only (decode-json encode-json)])
   (:require
-    [cascading.clojure.api :as c]))
+    [cascading.clojure.api :as c]
+    [cascading.clojure.io :as io]))
 
 
 (defn tokenize
@@ -22,7 +19,7 @@
   
 (defn run
   []
-  (with-log-level :debug
+  (io/with-log-level :debug
     (let [pipe (->
                   (c/pipe "word-lines")
                   (c/mapcat #'tokenize :< "line" :fn> ["word" "subcount"])
