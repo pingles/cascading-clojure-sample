@@ -1,5 +1,6 @@
 (ns cascading-clojure-sample.tweets
   (:use clojure.contrib.command-line)
+  (:import [org.codehaus.jackson JsonParseException])
   (:require [cascading.clojure.api :as c]
             [cascading.clojure.io :as io])
   (:gen-class))
@@ -8,11 +9,18 @@
   [input]
   [(:text input)])
 
+(defn safe-decode-json
+  "Handles cases when records can't be decoded."
+  [obj]
+  (try (io/decode-json obj)
+       (catch JsonParseException e
+         {})))
+
 (defn tagged-json
   [start-tag end-tag & [field-name]]
   (c/tagged-input start-tag
                   end-tag
-                  io/decode-json
+                  safe-decode-json
                   io/encode-json
                   field-name))
 
